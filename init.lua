@@ -76,6 +76,7 @@ Kickstart Guide:
     Feel free to delete them once you know what you're doing, but they should serve as a guide
     for when you are first encountering a few different constructs in your Neovim config.
 
+
 If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
 
 I hope you enjoy your Neovim journey,
@@ -790,23 +791,29 @@ require('lazy').setup({
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     -- 'folke/tokyonight.nvim',
     -- 'tanvirtin/monokai.nvim',
-    'loctvl842/monokai-pro.nvim',
+    -- 'loctvl842/monokai-pro.nvim',
     -- 'patstockwell/vim-monokai-tasty',
     -- 'trusktr/seti.vim',
     -- 'polirritmico/monokai-nightasty.nvim',
     -- 'ChristianChiarulli/onedark.nvim',
     -- 'scottmckendry/cyberdream.nvim',
+    'sainnhe/sonokai',
 
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-storm'
-      vim.cmd.colorscheme 'monokai-pro-spectrum'
+
+      vim.g.sonokai_style = 'andromeda'
+      vim.g.sonokai_better_performance = '1'
+      vim.g.sonokai_transparent_background = '1'
+      vim.cmd.colorscheme 'sonokai'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
+      vim.g.sonokai_enable_italic = true
     end,
   },
 
@@ -899,6 +906,8 @@ require('lazy').setup({
   require 'custom.plugins.init',
   require 'custom.plugins.oil',
   require 'custom.plugins.tailwindcss-colorizer',
+  require 'custom.plugins.chatGPT',
+  require 'custom.plugins.chatGPTHelper',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
