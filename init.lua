@@ -196,12 +196,16 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>gs', '<cmd>Git<CR>', { desc = 'Git [S]tatus' })
 vim.keymap.set('n', '<leader>gc', '<cmd>Git commit<CR>', { desc = 'Git [C]ommit' })
 vim.keymap.set('n', '<leader>gp', '<cmd>Git push<CR>', { desc = 'Git [P]ush' })
+
 -- I don't love the way this looks
 vim.keymap.set('n', '<leader>gl', '<cmd>Git pull<CR>', { desc = 'Git Pu[l]l' })
 vim.keymap.set('n', '<leader>gb', '<cmd>Git blame<CR>', { desc = 'Git [B]lame' })
 vim.keymap.set('n', '<leader>gd', '<cmd>Git diff<CR>', { desc = 'Git [D]iff' })
+
 -- git add current file
 vim.keymap.set('n', '<leader>ga', '<cmd>Git add %<CR>', { desc = 'Git [A]dd' })
+
+-- git add visual selection
 
 vim.o.tabstop = 2 -- A TAB character looks like 2 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
