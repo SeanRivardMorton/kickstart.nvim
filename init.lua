@@ -192,10 +192,8 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Keybinds to create splits
-
--- move split to side
-vim.keymap.set('n', '<leader>ws', '<C-w>r', { desc = 'Move split to side' })
+-- configure fugitive keybinds
+vim.keymap.set('n', '<leader>gs', '<cmd>Git<CR>', { desc = 'Git [S]tatus' })
 
 vim.o.tabstop = 2 -- A TAB character looks like 2 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
