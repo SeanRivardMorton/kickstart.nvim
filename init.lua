@@ -92,7 +92,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -103,7 +103,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -191,6 +191,16 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Keybinds to create splits
+
+-- move split to side
+vim.keymap.set('n', '<leader>ws', '<C-w>r', { desc = 'Move split to side' })
+
+vim.o.tabstop = 2 -- A TAB character looks like 2 spaces
+vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
+vim.o.softtabstop = 2 -- Number of spaces inserted instead of a TAB character
+vim.o.shiftwidth = 2 -- Number of spaces inserted when indenting
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -303,6 +313,11 @@ require('lazy').setup({
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     branch = '0.1.x',
+    defaults = {
+      file_ignore_patterns = {
+        'node_modules',
+      },
+    },
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -421,10 +436,16 @@ require('lazy').setup({
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
+    opts = {
+      ensure_installed = {
+        'tailwindcss-language-server',
+        'typescript-language-server',
+      },
+    },
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-      'williamboman/mason-lspconfig.nvim',
+      { 'williamboman/mason-lspconfig.nvim', opts = {} },
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -660,10 +681,16 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
+        python = { 'isort', 'black' },
+
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { { 'prettierd', 'prettier ' } },
+        typescriptreact = { { 'prettierd', 'prettier ' } },
+        javascriptreact = { { 'prettierd', 'prettier ' } },
+        json = { { 'prettierd', 'prettier ' } },
+        html = { { 'prettierd', 'prettier ' } },
+        css = { { 'prettierd', 'prettier ' } },
       },
     },
   },
@@ -789,14 +816,6 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    -- 'folke/tokyonight.nvim',
-    -- 'tanvirtin/monokai.nvim',
-    -- 'loctvl842/monokai-pro.nvim',
-    -- 'patstockwell/vim-monokai-tasty',
-    -- 'trusktr/seti.vim',
-    -- 'polirritmico/monokai-nightasty.nvim',
-    -- 'ChristianChiarulli/onedark.nvim',
-    -- 'scottmckendry/cyberdream.nvim',
     'sainnhe/sonokai',
 
     -- priority = 1000, -- Make sure to load this before all the other start plugins.
@@ -903,18 +922,13 @@ require('lazy').setup({
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-  require 'custom.plugins.init',
-  require 'custom.plugins.oil',
-  require 'custom.plugins.tailwindcss-colorizer',
-  require 'custom.plugins.chatGPT',
-  require 'custom.plugins.chatGPTHelper',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -936,6 +950,10 @@ require('lazy').setup({
     },
   },
 })
+
+require('cmp').config.formatting = {
+  format = require('tailwindcss-colorizer-cmp').formatter,
+}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
