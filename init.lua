@@ -194,6 +194,11 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- configure fugitive keybinds
 vim.keymap.set('n', '<leader>gs', '<cmd>Git<CR>', { desc = 'Git [S]tatus' })
+vim.keymap.set('n', '<leader>gc', '<cmd>Git commit<CR>', { desc = 'Git [C]ommit' })
+vim.keymap.set('n', '<leader>gp', '<cmd>Git push<CR>', { desc = 'Git [P]ush' })
+vim.keymap.set('n', '<leader>gl', '<cmd>Git pull<CR>', { desc = 'Git Pu[l]l' })
+vim.keymap.set('n', '<leader>gb', '<cmd>Git blame<CR>', { desc = 'Git [B]lame' })
+vim.keymap.set('n', '<leader>gd', '<cmd>Git diff<CR>', { desc = 'Git [D]iff' })
 
 vim.o.tabstop = 2 -- A TAB character looks like 2 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
