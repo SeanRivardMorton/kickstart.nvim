@@ -205,7 +205,18 @@ vim.keymap.set('n', '<leader>gd', '<cmd>Git diff<CR>', { desc = 'Git [D]iff' })
 -- git add current file
 vim.keymap.set('n', '<leader>ga', '<cmd>Git add %<CR>', { desc = 'Git [A]dd' })
 
--- git add visual selection
+-- change working directory
+-- vim.keymap.set('n', '<leader>cd', '<cmd>lcd %:p:h<CR>', { desc = '[C]hange [D]irectory' })
+-- go back up a level
+vim.keymap.set('n', '<leader>..', '<cmd>lcd %:p:h:h<CR>', { desc = 'Go up a level' })
+
+vim.keymap.set('n', '<leader>ci', '<cmd>TSToolsAddMissingImports<CR>', { desc = 'Add missing imports' })
+vim.keymap.set('n', '<leader>cr', '<cmd>TSToolsSortImports<CR>', { desc = 'Sort imports' })
+vim.keymap.set('n', '<leader>cu', '<cmd>TSToolsRemoveUnusedImports<CR>', { desc = 'Remove unused imports' })
+vim.keymap.set('n', '<leader>cf', '<cmd>TSToolsFixAll<CR>', { desc = 'Fix current file' })
+
+-- go to definition with [c]ode [d]efinition
+-- vim.keymap.set('n', '<leader>cd', '<cmd>lua vim.lsp.buf.definition()<CR>', { desc = '[C]ode [D]efinition' })
 
 vim.o.tabstop = 2 -- A TAB character looks like 2 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
@@ -374,12 +385,22 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
+        defaults = {
+          file_ignore_patterns = {
+            'node_modules',
+          },
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
+        grep_string = {
+          additonal_args = { '--hidden' },
+        },
+        live_grep = {
+          additional_args = { '--hidden' },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -890,7 +911,21 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'tsx',
+        'typescript',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
