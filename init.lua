@@ -215,6 +215,21 @@ vim.keymap.set('n', '<leader>cr', '<cmd>TSToolsSortImports<CR>', { desc = 'Sort 
 vim.keymap.set('n', '<leader>cu', '<cmd>TSToolsRemoveUnusedImports<CR>', { desc = 'Remove unused imports' })
 vim.keymap.set('n', '<leader>cf', '<cmd>TSToolsFixAll<CR>', { desc = 'Fix current file' })
 
+vim.keymap.set('n', '<leader>cc', '<cmd>ChatGPT<CR>', { desc = '[C]hatGPT' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ce', '<cmd>ChatGPTEditWithInstruction<CR>', { desc = 'Edit with instruction' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cg', '<cmd>ChatGPTRun grammar_correction<CR>', { desc = 'Grammar Correction' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ct', '<cmd>ChatGPTRun translate<CR>', { desc = 'Translate' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ck', '<cmd>ChatGPTRun keywords<CR>', { desc = 'Keywords' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cd', '<cmd>ChatGPTRun docstring<CR>', { desc = 'Docstring' })
+-- vim.keymap.set('n', '<leader>ca', '<cmd>ChatGPTRun add_tests<CR>', { desc = 'Add Tests' })
+vim.keymap.set({ 'n', 'v' }, '<leader>co', '<cmd>ChatGPTRun optimize_code<CR>', { desc = 'Optimize Code' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cs', '<cmd>ChatGPTRun summarize<CR>', { desc = 'Summarize' })
+-- vim.keymap.set('n', '<leader>cf', '<cmd>ChatGPTRun fix_bugs<CR>', { desc = 'Fix Bugs' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cx', '<cmd>ChatGPTRun explain_code<CR>', { desc = 'Explain Code' })
+-- vim.keymap.set('n', '<leader>cr', '<cmd>ChatGPTRun roxygen_edit<CR>', { desc = 'Roxygen Edit' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cl', '<cmd>ChatGPTRun code_readability_analysis<CR>', { desc = 'Code Readability Analysis' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cm', '<cmd>ChatGPTActAs<CR>', { desc = 'Act as' })
+
 -- go to definition with [c]ode [d]efinition
 -- vim.keymap.set('n', '<leader>cd', '<cmd>lua vim.lsp.buf.definition()<CR>', { desc = '[C]ode [D]efinition' })
 
@@ -286,6 +301,69 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      signs_staged = {
+        add = { text = '┃' },
+        change = { text = '┃' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+        untracked = { text = '┆' },
+      },
+      signs_staged_enable = true,
+      signcolumn = true,
+      numhl = true,
+      on_attach = function(bufnr)
+        local gitsigns = require 'gitsigns'
+
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        map('n', ']c', function()
+          if vim.wo.diff then
+            vim.cmd.normal { ']c', bang = true }
+          else
+            gitsigns.nav_hunk 'next'
+          end
+        end)
+
+        map('n', '[c', function()
+          if vim.wo.diff then
+            vim.cmd.normal { '[c', bang = true }
+          else
+            gitsigns.nav_hunk 'prev'
+          end
+        end)
+
+        -- Actions
+        map('n', '<leader>hs', gitsigns.stage_hunk)
+        map('n', '<leader>hr', gitsigns.reset_hunk)
+        map('v', '<leader>hs', function()
+          gitsigns.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end)
+        map('v', '<leader>hr', function()
+          gitsigns.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end)
+        map('n', '<leader>hS', gitsigns.stage_buffer)
+        map('n', '<leader>hu', gitsigns.undo_stage_hunk)
+        map('n', '<leader>hR', gitsigns.reset_buffer)
+        map('n', '<leader>hp', gitsigns.preview_hunk)
+        map('n', '<leader>hb', function()
+          gitsigns.blame_line { full = true }
+        end)
+        map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+        map('n', '<leader>hd', gitsigns.diffthis)
+        map('n', '<leader>hD', function()
+          gitsigns.diffthis '~'
+        end)
+        map('n', '<leader>td', gitsigns.toggle_deleted)
+
+        -- Text object
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      end,
     },
   },
 
@@ -319,6 +397,22 @@ require('lazy').setup({
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        -- c = {
+        --   name = 'ChatGPT',
+        --   c = { '<cmd>ChatGPT<CR>', 'ChatGPT' },
+        --   e = { '<cmd>ChatGPTEditWithInstruction<CR>', 'Edit with instruction', mode = { 'n', 'v' } },
+        --   g = { '<cmd>ChatGPTRun grammar_correction<CR>', 'Grammar Correction', mode = { 'n', 'v' } },
+        --   t = { '<cmd>ChatGPTRun translate<CR>', 'Translate', mode = { 'n', 'v' } },
+        --   k = { '<cmd>ChatGPTRun keywords<CR>', 'Keywords', mode = { 'n', 'v' } },
+        --   d = { '<cmd>ChatGPTRun docstring<CR>', 'Docstring', mode = { 'n', 'v' } },
+        --   a = { '<cmd>ChatGPTRun add_tests<CR>', 'Add Tests', mode = { 'n', 'v' } },
+        --   o = { '<cmd>ChatGPTRun optimize_code<CR>', 'Optimize Code', mode = { 'n', 'v' } },
+        --   s = { '<cmd>ChatGPTRun summarize<CR>', 'Summarize', mode = { 'n', 'v' } },
+        --   f = { '<cmd>ChatGPTRun fix_bugs<CR>', 'Fix Bugs', mode = { 'n', 'v' } },
+        --   x = { '<cmd>ChatGPTRun explain_code<CR>', 'Explain Code', mode = { 'n', 'v' } },
+        --   r = { '<cmd>ChatGPTRun roxygen_edit<CR>', 'Roxygen Edit', mode = { 'n', 'v' } },
+        --   l = { '<cmd>ChatGPTRun code_readability_analysis<CR>', 'Code Readability Analysis', mode = { 'n', 'v' } },
+        -- },
       }
     end,
   },
@@ -405,12 +499,14 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          ['lazygit'] = {},
         },
       }
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'lazygit')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -847,23 +943,16 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'sainnhe/sonokai',
-
-    -- priority = 1000, -- Make sure to load this before all the other start plugins.
+    'catppuccin/nvim',
+    lazy = false,
+    priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-storm'
 
-      vim.g.sonokai_style = 'andromeda'
-      vim.g.sonokai_better_performance = '1'
-      vim.g.sonokai_transparent_background = '1'
-      vim.cmd.colorscheme 'sonokai'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
-      vim.g.sonokai_enable_italic = true
+      vim.cmd.colorscheme 'catppuccin-mocha'
     end,
   },
 
