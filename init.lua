@@ -168,7 +168,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
-vim.keymap.set('n', '-', '<CMD>oil<CR>', { desc = 'Open parent directory' })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -201,6 +200,13 @@ vim.keymap.set('n', '<leader>gp', '<cmd>Git push<CR>', { desc = 'Git [P]ush' })
 vim.keymap.set('n', '<leader>gl', '<cmd>Git pull<CR>', { desc = 'Git Pu[l]l' })
 vim.keymap.set('n', '<leader>gb', '<cmd>Git blame<CR>', { desc = 'Git [B]lame' })
 vim.keymap.set('n', '<leader>gd', '<cmd>Git diff<CR>', { desc = 'Git [D]iff' })
+
+-- Mini.files
+vim.keymap.set('n', '-', '<CMD>lua MiniFiles.open()<CR>', { desc = 'Find [F]iles' })
+vim.keymap.set('n', '<leader>gT', '<CMD>lua MiniTrailspace.trim()<CR>', { desc = 'Find [F]iles' })
+vim.keymap.set('n', '<leader>gL', '<CMD>lua MiniTrailspace.trim_last_lines()<CR>', { desc = 'Find [F]iles' })
+
+-- vim.keymap.set('n', '-', '<CMD>oil<CR>', { desc = 'Open parent directory' })
 
 -- git add current file
 vim.keymap.set('n', '<leader>ga', '<cmd>Git add %<CR>', { desc = 'Git [A]dd' })
@@ -274,11 +280,11 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+--
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -606,12 +612,12 @@ require('lazy').setup({
       -- Neovim. This is where `mason` and related plugins come into play.
       --
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
-      -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -943,16 +949,94 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'catppuccin/nvim',
+    -- 'catppuccin/nvim',
+    'folke/tokyonight.nvim',
     lazy = false,
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      -- vim.cmd.colorscheme 'tokyonight-storm'
+      --
+      -- local lualine = require 'lualine'
+      -- lualine.setup {
+      --   options = {
+      --     theme = 'tokyonight',
+      --   },
+      -- }
 
-      vim.cmd.colorscheme 'catppuccin-mocha'
+      local tokyonight = require 'tokyonight'
+      tokyonight.setup {
+        -- Set the theme variant to use
+        --  Options: storm, night, day, storm, night, night
+        --  Default: storm
+        theme = 'night',
+        transparent = true,
+        style = 'night',
+
+        styles = {
+          functions = {
+            italic = true,
+            bold = true,
+          },
+          comments = {
+            italic = true,
+            bold = true,
+          },
+        },
+
+        on_colors = function(colors)
+          -- Set the theme variant to use
+          --  Options: storm, night, day, storm, night, night
+          --  Default: storm
+          vim.g.tokyonight_style = 'night'
+          colors.bg_statusline = colors.none
+          -- colors.bg = colors.none
+        end,
+
+        on_highlights = function(hl, c)
+          -- Set the theme variant to use
+          -- Options: storm, night, day, storm, night, night
+          -- Default: storm
+          vim.g.tokyonight_style = 'night'
+          local prompt = '#2d3149'
+          hl.TelescopeNormal = {
+            bg = c.bg_dark,
+            fg = c.fg_dark,
+          }
+          hl.TelescopeBorder = {
+            bg = c.bg_dark,
+            fg = c.bg_dark,
+          }
+          hl.TelescopePromptNormal = {
+            bg = prompt,
+          }
+          hl.TelescopePromptBorder = {
+            bg = prompt,
+            fg = prompt,
+          }
+          hl.TelescopePromptTitle = {
+            bg = prompt,
+            fg = prompt,
+          }
+          hl.TelescopePreviewTitle = {
+            bg = c.bg_dark,
+            fg = c.bg_dark,
+          }
+          hl.TelescopeResultsTitle = {
+            bg = c.bg_dark,
+            fg = c.bg_dark,
+          }
+        end,
+
+        -- Enable the styles for the statusline
+        --  Options: true, false
+        --  Default: true
+      }
+
+      vim.cmd.colorscheme 'tokyonight-night'
+
+      -- vim.cmd.colorscheme 'catppuccin-mocha'
     end,
   },
 
@@ -977,20 +1061,51 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      require('mini.starter').setup()
+
+      require('mini.splitjoin').setup {
+        mappings = {
+          toggle = 'gS',
+        },
+      }
+
+      require('mini.trailspace').setup {
+        mappings = {
+          strip = 'gT',
+          toggle = 'gt',
+        },
+      }
+
+      require('mini.animate').setup()
+
+      require('mini.files').setup {
+        -- Set the default directory for the file browser
+        --  Default: `vim.fn.stdpath('config')`
+        cwd = vim.fn.stdpath 'config',
+
+        windows = {
+          max_number = 3,
+        },
+
+        -- Set the default width of the file browser
+        --  Default: 30
+        width = 30,
+      }
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- statusline.setup { use_icons = vim.g.have_nerd_font }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -1085,9 +1200,33 @@ require('lazy').setup({
   },
 })
 
+-- require('startup').setup { theme = 'dashboard' }
+
 require('cmp').config.formatting = {
   format = require('tailwindcss-colorizer-cmp').formatter,
 }
+
+require('lazy').setup {
+  spec = {
+    { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
+    { import = 'lazyvim.plugins.extras.test.core' },
+    { import = 'plugins' },
+  },
+}
+
+local lspconfig = require 'lspconfig'
+
+lspconfig.denols.setup {
+  root_dir = lspconfig.util.root_pattern('deno.json', 'deno.jsonc'), -- Use these files to determine the project root
+  init_options = {
+    lint = true, -- Enable linting
+    unstable = false, -- Set to true if you need unstable APIs
+  },
+}
+
+-- lspconfig.tsserver.setup {
+--   root_dir = lspconfig.util.root_pattern 'package.json',
+-- }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
